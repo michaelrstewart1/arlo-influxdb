@@ -3,30 +3,31 @@
 from pyarlo import PyArlo
 from influxdb import InfluxDBClient
 
-# INFLUXDB CONNECTION INFO
-host = "192.168.1.67"
-port = 8086
-user = "user"
-password = "password" 
-dbname = "readings"
+def main():
+	# INFLUXDB CONNECTION INFO
+	host = "192.168.1.67"
+	port = 8086
+	user = "user"
+	password = "password" 
+	dbname = "readings"
+	
+	# CREATE CLIENT OBJECT
+	client = InfluxDBClient(host, port, user, password, dbname)
+	
+	# ARLO CONNECTION INFO
+	arlo  = PyArlo('user@fake.com', 'password')
+	
+	collectData(client,arlo)
 
-# CREATE CLIENT OBJECT
-client = InfluxDBClient(host, port, user, password, dbname)
+def collectData(client,arlo):
+	cams = arlo.cameras
 
-# ARLO CONNECTION INFO
-arlo  = PyArlo('user@fake.com', 'password')
-
-# SET VARIABLES
-cam = arlo.cameras
-cam = len(cam)
-
-# COLLECT & UPLOAD DATA
-if cam <> 0:
-	for i in range(cam):
-		model_id = arlo.cameras[i].model_id
-		serial_number = arlo.cameras[i].serial_number
-		battery_level = arlo.cameras[i].battery_level
-		signal_strength = arlo.cameras[i].signal_strength
+	# COLLECT & UPLOAD DATA
+	for cam in cams:
+		model_id = cam.model_id
+		serial_number = cam.serial_number
+		battery_level = cam.battery_level
+		signal_strength = cam.signal_strength
 		measurement = "jupitor-" + model_id + "-" + serial_number
 		
 		data = [
@@ -40,5 +41,6 @@ if cam <> 0:
 		]
 	
 		client.write_points(data)
-else:
-	sys.exit()
+
+if __name__ == "__main__":
+	main()
