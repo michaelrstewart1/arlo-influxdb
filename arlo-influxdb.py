@@ -10,7 +10,7 @@ user = "user"
 password = "password" 
 dbname = "readings"
 
-#CREATE CLIENT OBJECT
+# CREATE CLIENT OBJECT
 client = InfluxDBClient(host, port, user, password, dbname)
 
 # ARLO CONNECTION INFO
@@ -20,6 +20,7 @@ arlo  = PyArlo('user@fake.com', 'password')
 cam = arlo.cameras
 cam = len(cam)
 
+# COLLECT & UPLOAD DATA
 if cam <> 0:
 	for i in range(cam):
 		model_id = arlo.cameras[i].model_id
